@@ -10,7 +10,8 @@ hole_r = (outer_radius - inner_radius - 2 * thickness) / 2;
 module ring(radius, width, height) {
 	difference () {
 		cylinder(r = radius, h = height);
-		cylinder(r = radius - width, h = height);
+		translate([0,0,-height/100])
+		cylinder(r = radius - width, h = height + height/50);
 	}
 }
 
