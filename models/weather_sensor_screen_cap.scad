@@ -11,20 +11,12 @@ num_ribs = 3;			// number of holding ribs
 angle_sep = 360/num_ribs;
 
 translate ([0,0,height])
-// screen upper rim
 difference () {
-cylinder (h=thickness*4,r= screen_radius - screen_bevel,$fn=100);
-translate ([0,0,-Clear/2])
-cylinder (h=thickness*4 +Clear,r= (screen_radius - screen_bevel)- thickness ,$fn=100);
-
-
-// screen upper rim gabs for ribs from another screen.
-for (i = [0 : (num_ribs-1)]) {
-	rotate ([90,0,60 + (angle_sep * i)])
-	translate ([(screen_radius - screen_bevel)- thickness - Clear/2 ,-Clear/2,-thickness/2])
-	cube(size = [thickness + Clear,thickness*4 + Clear, thickness]);
+	sphere(screen_radius - screen_bevel, $fn=100);
+	sphere(screen_radius - screen_bevel - thickness, $fn=100);
+	cube([100,100,height], center = true);
 }
-}
+
 
 //screen 
 
@@ -38,11 +30,6 @@ difference () {
 //inner ring
 inner_ring_thickness = thickness *2;
 
-difference () {
-	cylinder (h=inner_ring_thickness,r = tube_radius + thickness,$fn=100);
-	translate([0,0,-Clear/2])
-	cylinder (h=inner_ring_thickness +Clear,r = tube_radius,$fn=100);		
-}
 
 // center ribs
 for (i = [0 : (num_ribs-1)]) {
