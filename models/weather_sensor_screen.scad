@@ -13,16 +13,16 @@ angle_sep = 360/num_ribs;
 translate ([0,0,height])
 // screen upper rim
 difference () {
-cylinder (h=thickness*4,r= screen_radius - screen_bevel,$fn=100);
+cylinder (h=thickness*2,r= screen_radius - screen_bevel,$fn=100);
 translate ([0,0,-Clear/2])
-cylinder (h=thickness*4 +Clear,r= (screen_radius - screen_bevel)- thickness ,$fn=100);
+cylinder (h=thickness*2 +Clear,r= (screen_radius - screen_bevel)- thickness ,$fn=100);
 
 
 // screen upper rim gabs for ribs from another screen.
 for (i = [0 : (num_ribs-1)]) {
-	rotate ([90,0,60 + (angle_sep * i)])
-	translate ([(screen_radius - screen_bevel)- thickness - Clear/2 ,-Clear/2,-thickness/2])
-	cube(size = [thickness + Clear,thickness*4 + Clear, thickness]);
+	rotate ([0,0,60 + (angle_sep * i)])
+	translate ([(screen_radius - screen_bevel)- thickness - Clear/2 ,-Clear/2,-Clear/2])
+	cube(size = [thickness + 2*Clear, thickness + Clear,thickness*2 + Clear]);
 }
 }
 

@@ -30,13 +30,13 @@ difference () {
 	    difference () {
 		    cylinder (h=height/2,r1=screen_radius/4,r2=screen_radius/4 - thickness,$fn=100);
 
-		    translate ([0,screen_radius/4,0])
+		    translate ([0,screen_radius/4,2.5])
 			    rotate ([90,0,0])
-				    cylinder (h=screen_radius/2,r=screen_radius/8, $fn=100);
+				    cylinder (h=screen_radius/2,r=3, $fn=100);
 
-		    translate ([-screen_radius/4,0,0])
+		    translate ([-screen_radius/4,0,2.5])
 			    rotate ([0,90,0])
-				    cylinder (h=screen_radius/2,r=screen_radius/8, $fn=100);
+				    cylinder (h=screen_radius/2,r=3, $fn=100);
 	    }
 
 
@@ -62,6 +62,6 @@ difference () {
 		rotate ([90,0,angle_sep * i])
 		translate ([0,0,-thickness/2])
 		linear_extrude (height = thickness, convexity = 10)
-		polygon(points=[[tube_radius + thickness, inner_ring_thickness],[tube_radius + thickness - Clear, 0],[screen_radius - thickness,0],[screen_radius - screen_bevel - thickness,height]]);
+		polygon(points=[[0, cap_height + height],[tube_radius + thickness - Clear, 0],[screen_radius - thickness,0],[screen_radius - screen_bevel - thickness,height]]);
 
 }
