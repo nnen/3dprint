@@ -100,8 +100,8 @@ module hull(radius, inner_radius, height, wall, motor_bottom) {
 				wall
 			);
 			*/
-		};
-	
+		}
+		
 		cylinder(
 			r1 = radius - wall,
 			r2 = inner_radius,
@@ -130,6 +130,7 @@ module screw_anchor(outer_r, inner_r, depth, height, wall) {
 }
 
 
+/*
 translate([0, 0, height - 20])
 intersection () {
 	for (i = [0 : 1]) {
@@ -140,11 +141,11 @@ intersection () {
 	translate([0, 0, -height / 2])
 	cylinder(r = radius, h = height);
 }
+*/
 
-// circular_grid_fin(fin_r, radius - wall, wall, fin_spacing, fin_h);
+circular_grid_fin(fin_r, radius - wall, wall, fin_spacing, fin_h);
 
 
-/*
 difference () {
 	union () {
 		hull(radius, inner_radius, height, wall, motor_bottom);
@@ -152,7 +153,8 @@ difference () {
 		translate([0, 0, motor_top])
 		motor_holder();
 	}
-
+	
+	/*
 	translate([0, 0, height - 20])
 	for (i = [0 : 1]) {
 		rotate([0, 0, i * 180])
@@ -160,11 +162,6 @@ difference () {
 		translate([0, outer_r, 0])
 		cylinder(r = screw_outer_r, h = screw_length);
 	}
+	*/
 }
-*/
-
-
-
-
-
 
