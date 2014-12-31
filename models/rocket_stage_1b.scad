@@ -1,13 +1,13 @@
 
 use <library.scad>
 
-radius = 30;
-inner_radius = 20;
+radius = 50 / 2;
+inner_radius = 32 / 2;
 
 wall = 0.6;
-height = 100;
-motor_top = 80;
-motor_bottom = 20;
+height = 180;
+motor_top = 173;
+motor_bottom = 10;
 
 rib_count = 12;
 
@@ -19,9 +19,9 @@ fin_spacing = 10;
 */
 
 // classic fins
-fin_r = 60;
-fin_h = 50;
-fin_angle = 30;
+fin_r = radius + 50;
+fin_h = 59;
+fin_angle = 16;
 
 screw_outer_r = 2.5;
 screw_inner_r = 1;
