@@ -3,11 +3,11 @@ use <library.scad>
 
 
 wall = 2;
-width = 150;
+width = 140;
 depth = 90;
-floor_height = 10;
+floor_height = 5;
 
-ramp_height = 10;
+ramp_height = 5;
 drain_width = 20;
 drain_length = 10;
 
@@ -18,7 +18,7 @@ inner_depth = depth - wall * 2;
 
 rack_leg_height = 20;
 grid_spacing = 10;
-
+clearance = 0.120;
 
 module bottom() {
     tunnel_width_scale = 0.75;
@@ -46,7 +46,7 @@ module bottom() {
         }
     
         //translate([-width, 0, 0])
-        for (i = [0 : (tunnel_count - 1)]) {
+        for (i = [0 : (tunnel_count )]) {
             translate([wall + (tunnel_width / 2) + i * (tunnel_width + wall), 0, 0])
             scale([tunnel_width_scale, 1, 1])
             rotate([0, 45, 0])
@@ -56,10 +56,10 @@ module bottom() {
     }
     
     // RAMPS
-    translate([0, 0, floor_height])
+    translate([0, 0, floor_height -  clearance])
     ramp(width, depth, ramp_height);
 
-    translate([width - drain_width - 2 * wall, wall, floor_height])
+    translate([width - drain_width - 2 * wall, wall, floor_height - clearance])
     rotate([0, 0, 90])
     ramp(depth - 2 * wall, width - drain_width - 2 * wall, ramp_height);
     
@@ -94,20 +94,20 @@ module bottom() {
     
     // RACK STANDS
     color("red")
-    translate([wall, wall, 0])
-    cube([wall * 2, wall * 2, floor_height + ramp_height]);
+    translate([wall - clearance, wall - clearance, floor_height])
+    cube([wall * 2, wall * 2, floor_height + ramp_height - floor_height ]);
     
     color("red")
-    translate([width - wall * 3, wall, 0])
-    cube([wall * 2, wall * 2, floor_height + ramp_height]);
+    translate([width - wall * 3 + clearance, wall - clearance, floor_height])
+    cube([wall * 2, wall * 2, floor_height + ramp_height - floor_height ]);
     
     color("red")
-    translate([wall, depth - wall * 3, 0])
-    cube([wall * 2, wall * 2, floor_height + ramp_height]);
+    translate([wall - clearance, depth - wall * 3 + clearance, floor_height])
+    cube([wall * 2, wall * 2, floor_height + ramp_height - floor_height ]);
     
     color("red")
-    translate([width - wall * 3, depth - wall * 3, 0])
-    cube([wall * 2, wall * 2, floor_height + ramp_height]);
+    translate([width - wall * 3 + clearance, depth - wall * 3 + clearance, floor_height])
+    cube([wall * 2, wall * 2, floor_height + ramp_height - floor_height ]);
 }
 
 
@@ -158,8 +158,8 @@ module rack() {
 
 bottom();
 
-
-color("green")
-translate([0, 0, floor_height + ramp_height + 10])
-rack();
+//rotate([180,0,0])
+//color("green")
+//translate([0, 0, floor_height + ramp_height + 10])
+//rack();
 
