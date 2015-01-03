@@ -1,5 +1,65 @@
 
 
+module frustum(width, depth, width2, depth2, height) {
+    // polyhedron(points = [ [x, y, z], ... ], faces = [ [p1, p2, p3..], ... ], convexity = N);
+
+    polyhedron(
+        points = [
+            [-width / 2, -depth / 2, 0],
+            [width / 2, -depth / 2, 0],
+            [width / 2, depth / 2, 0],
+            [-width / 2, depth / 2, 0],
+            
+            [-width2 / 2, -depth2 / 2, height],
+            [-width2 / 2, depth2 / 2, height],
+            [width2 / 2, depth2 / 2, height],
+            [width2 / 2, -depth2 / 2, height]
+        ],
+        faces = [
+            // bottom
+            [0, 1, 2, 3],
+            // top
+            [4, 5, 6, 7],
+    
+            // front
+            [4, 7, 1, 0],
+            // back
+            [6, 5, 3, 2],
+            // left
+            [5, 4, 0, 3],
+            // right
+            [7, 6, 2, 1]
+        ]
+    );
+}
+
+
+module pyramid(width, depth, height, center = false) {
+    if (center) {
+    } else {
+    }
+    
+    polyhedron(
+        points = [
+            [-width / 2, -depth / 2, 0],
+            [width / 2, -depth / 2, 0],
+            [width / 2, depth / 2, 0],
+            [-width / 2, depth / 2, 0],
+            
+            [0, 0, height]
+        ],
+        faces = [
+            [0, 1, 2, 3],
+            
+            [0, 4, 1],
+            [2, 4, 3],
+            [3, 4, 0],
+            [1, 4, 2]
+        ]
+    );
+}
+
+
 module ccube(width, depth, height, center_z = false, corner_cut = 0) {
 	if (center_z) {
 		translate([-width / 2, -depth / 2, -height / 2]) {
