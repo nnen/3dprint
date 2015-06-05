@@ -15,6 +15,7 @@ connector_type = "vault"; // [inline,vault]
 // Inline junction type - currently only round is supported
 inline_junction_type = "round"; // [round,hex,none]
 //Printed layer thickness - required to make the overhang of the vault printable
+layer_thickness = 0.3;
 
 
 /* [Manifold] */
@@ -81,7 +82,7 @@ if (connector_type == "vault" || inputs > 1 || outputs > 1)
 			for (i = [1:outputs]) 
 			{
 				// Make holes in the vault for output egress
-      		translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,input_diameter * input_barb_count * 0.9 + center_height / 2] ) cylinder( r=output_diameter * 0.36, h=center_height );
+      		translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,input_diameter * input_barb_count * 0.9 + center_height + layer_thickness] ) cylinder( r=output_diameter * 0.36, h=center_height, $fn=10 );
 			}
 		 } // end vault with holes
        //output_barb( input_diameter, output_diameter, 12 );
