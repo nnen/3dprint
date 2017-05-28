@@ -9,13 +9,13 @@ output_units = "Metric"; // [US,Metric]
 // Input tubing inside diameter, e.g. 0.5 for 1/2 inch (US); 0.625 for 5/8, 0.75 for 3/4, etc
 input_size = 1/2;
 // Output tubing inside diameter, e.g. 0.17 for 1/4 inch OD (outside diameter) vinyl tubing (US); 0.25 for 1/4 inch ID (inside diameter) (US); 0.375 for 3/8 inch ID
-output_size = 7;
+output_size = 6;
 // Connector type - Use inline for a single input and single output
 connector_type = "vault"; // [inline,vault]
 // Inline junction type - currently only round is supported
 inline_junction_type = "round"; // [round,hex,none]
 //Printed layer thickness - required to make the overhang of the vault printable
-layer_thickness = 0.3;
+layer_thickness = 0.2;
 
 
 /* [Manifold] */
@@ -23,7 +23,7 @@ layer_thickness = 0.3;
 // Vault wall thickness in mm - increase for higher pressure connections
 vault_wall_thickness = 2.0;
 // Add support under vault for printing
-vault_support = "yes"; // [yes,no]
+vault_support = "no"; // [yes,no]
 // Ratio of connector diameter to space allocated in vault - increase to allow more space for hose clamps, etc.
 vault_connector_ratio = 1.8;
 
@@ -36,7 +36,7 @@ strength = 1.0;
 // Number of barbs on input - use 3 for larger tubing to reduce overall print height
 input_barb_count = 3;
 // Number of barbs on output - use 4 for smaller tubing
-output_barb_count = 4;
+output_barb_count = 3;
 
 /* [Hidden] */
 inches_to_mm = 25.400;
@@ -48,7 +48,7 @@ module make_adapter( input_diameter, output_diameter )
 
 if (connector_type == "inline" && inputs == 1 && outputs == 1)
 {
-  assign ( junction_height = input_barb_count )
+  junction_height = input_barb_count;
   {
     union() {
       input_barb( input_diameter );
@@ -59,9 +59,13 @@ if (connector_type == "inline" && inputs == 1 && outputs == 1)
 }
 if (connector_type == "vault" || inputs > 1 || outputs > 1)
 {
-  assign( center_width = max(inputs * input_diameter * vault_connector_ratio, outputs * output_diameter * vault_connector_ratio), center_height = max(input_diameter * vault_connector_ratio, output_diameter * vault_connector_ratio), junction_height = input_barb_count )
+  center_width = max(inputs * input_diameter * vault_connector_ratio, outputs * output_diameter * vault_connector_ratio); 
+  center_height = max(input_diameter * vault_connector_ratio, output_diameter * vault_connector_ratio);
+  junction_height = input_barb_count;
+    
   {
-   assign( center_empty_input = center_width - input_diameter * vault_connector_ratio * inputs, center_empty_output = center_width - output_diameter * vault_connector_ratio * outputs )
+   center_empty_input = center_width - input_diameter * vault_connector_ratio * inputs;
+   center_empty_output = center_width - output_diameter * vault_connector_ratio * outputs;
    {
      union() {
        //input_barb( input_diameter );
@@ -73,7 +77,8 @@ if (connector_type == "vault" || inputs > 1 || outputs > 1)
 		 //echo( "center_width=", center_width, "; by input=", inputs * input_diameter * vault_connector_ratio, "; by output=", outputs * output_diameter * vault_connector_ratio, "; center_empty_input=", center_empty_input, "; center_empty_output=", center_empty_output );
 		 difference()
 		 {
-			translate([-vault_wall_thickness,-vault_wall_thickness,0]) vault( input_diameter, junction_height, center_width, center_height, center_height, vault_wall_thickness );
+            // make vault
+			translate([-vault_wall_thickness,-vault_wall_thickness,vault_wall_thickness]) vault( input_diameter, junction_height, center_width, center_height, center_height, vault_wall_thickness );
 			for (i = [1:inputs]) 
 			{
 				// Make holes in the vault for input entry
@@ -81,16 +86,31 @@ if (connector_type == "vault" || inputs > 1 || outputs > 1)
 			}
 			for (i = [1:outputs]) 
 			{
-				// Make holes in the vault for output egress
-      		translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,input_diameter * input_barb_count * 0.9 + center_height + layer_thickness] ) cylinder( r=output_diameter * 0.36, h=center_height, $fn=10 );
+				// Make holes in the vault for output egress (one solid layer for bridge print planning)
+     		translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,input_diameter * input_barb_count * 0.9 + center_height + vault_wall_thickness + layer_thickness] ) cylinder( r=output_diameter * 0.36, h=2*vault_wall_thickness, $fn=10 );
 			}
 		 } // end vault with holes
        //output_barb( input_diameter, output_diameter, 12 );
 	    for (i = [1:outputs]) 
 		 {
-			translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,-output_diameter * 0.3] ) output_barb( input_diameter, output_diameter, center_height + 2 * vault_wall_thickness );
+            translate( [center_empty_output / 2 + output_diameter * vault_connector_ratio / 2 + output_diameter * (i-1) * vault_connector_ratio,0,-output_diameter * 0.3] ) output_barb( input_diameter, output_diameter, center_height + 2 * vault_wall_thickness );
 		 }
      }
+	   // Add supports if requested
+		if (vault_support == "yes")
+	   {
+		  support_leg_width = center_width / 4;
+          support_leg_thickness = vault_wall_thickness / 2;
+
+		  translate([center_height-support_leg_width,center_width-support_leg_thickness,0]) cube([support_leg_width, support_leg_thickness, input_diameter * input_barb_count * 0.9]);
+/*		  translate([outside_width-support_leg_width,0, wall_thickness-vault_base]) cube([support_leg_width, center_depth + wall_thickness*2, 0.6]);
+		  translate([0,outside_depth-support_leg_thickness,wall_thickness-vault_base]) cube([support_leg_width,support_leg_thickness, vault_base]);
+		  translate([outside_width-support_leg_width,0,wall_thickness-vault_base]) cube([support_leg_width,support_leg_thickness, vault_base]);
+		  translate([0,0, wall_thickness-vault_base]) cube([support_leg_width, center_depth + wall_thickness*2, 0.6]);
+
+		  translate([0,0,wall_thickness-vault_base]) cube([support_leg_width, support_leg_thickness, vault_base]);*/
+		}
+     
 	}
   }
 }
@@ -155,7 +175,10 @@ module junction( input_diameter, output_diameter, jheight )
 
 module vault( input_diameter, jheight, center_width, center_depth, center_vheight, wall_thickness )
 {
-  assign( outside_width = center_width + 2 * wall_thickness, outside_depth = center_depth + 2 * wall_thickness, outside_vheight = center_vheight + 2 * wall_thickness, vault_base = input_diameter * jheight * 0.9 )
+  outside_width = center_width + 2 * wall_thickness;
+  outside_depth = center_depth + 2 * wall_thickness;
+  outside_vheight = center_vheight + 2 * wall_thickness;
+  vault_base = input_diameter * jheight * 0.9;
   {
     translate( [0, -outside_depth / 2 + wall_thickness, vault_base - wall_thickness] ) union()
 	 {
@@ -164,20 +187,6 @@ module vault( input_diameter, jheight, center_width, center_depth, center_vheigh
         cube( [outside_width,outside_depth,outside_vheight] );
         translate( [wall_thickness,wall_thickness,wall_thickness] ) cube( [center_width, center_depth, center_vheight] );
       }
-	   // Add supports if requested
-		if (vault_support == "yes")
-	   {
-		  assign( support_leg_width = center_width / 4, support_leg_thickness = wall_thickness / 2 )
-		  {
-		  translate([outside_width-support_leg_width,outside_depth-support_leg_thickness,wall_thickness-vault_base]) cube([support_leg_width, support_leg_thickness, vault_base]);
-		  translate([outside_width-support_leg_width,0, wall_thickness-vault_base]) cube([support_leg_width, center_depth + wall_thickness*2, 0.6]);
-		  translate([0,outside_depth-support_leg_thickness,wall_thickness-vault_base]) cube([support_leg_width,support_leg_thickness, vault_base]);
-		  translate([outside_width-support_leg_width,0,wall_thickness-vault_base]) cube([support_leg_width,support_leg_thickness, vault_base]);
-		  translate([0,0, wall_thickness-vault_base]) cube([support_leg_width, center_depth + wall_thickness*2, 0.6]);
-
-		  translate([0,0,wall_thickness-vault_base]) cube([support_leg_width, support_leg_thickness, vault_base]);
-		  }
-		}
     }
   }
 }
